@@ -48,7 +48,6 @@ app.get('/', (req, res) => {
   res.send('<h1>Bot Operational</h1>');
 });
 
-module.exports = app;
       <!DOCTYPE html>
       <html lang="en">
       <head>
