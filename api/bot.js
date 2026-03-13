@@ -1,45 +1,54 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
+const config = require('../config'); // Menggunakan config.js
 const features = require('../features');
+
 const app = express();
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const BOT_USERNAME = process.env.BOT_USERNAME || 'Danxyy_bot';
 
-if (!BOT_TOKEN) {
-  console.error('ERROR: TELEGRAM_BOT_TOKEN not found in environment variables!');
-}
+// Inisialisasi Bot dengan config.js
+const bot = new TelegramBot(config.BOT_TOKEN, { polling: false });
 
-const bot = new TelegramBot(BOT_TOKEN, {
-  polling: false 
-});
-
+// Register fitur
 features.register(bot);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Route utama untuk webhook Telegram
 app.post('/api/bot', async (req, res) => {
   try {
     await bot.processUpdate(req.body);
     res.status(200).send('OK');
   } catch (error) {
-    res.status(200).send('OK'); 
+    console.error('Error processing update:', error);
+    res.status(200).send('OK'); // Tetap 200 agar Telegram tidak retry terus-menerus
   }
 });
 
+// Route untuk setup webhook
 app.get('/set-webhook', async (req, res) => {
   try {
     const vercelUrl = 'https://nnn-tau-jet.vercel.app';
     const webhookUrl = `${vercelUrl}/api/bot`;
     
     await bot.deleteWebHook();
-    await new Promise(resolve => setTimeout(resolve, 1000));
     await bot.setWebHook(webhookUrl);
     
     const botInfo = await bot.getMe();
     const webhookInfo = await bot.getWebHookInfo();
     
-    res.send(`
+    res.send(`<h1>Webhook Set!</h1><p>Bot: @${botInfo.username}</p><p>Status: ${webhookInfo.url}</p>`);
+  } catch (error) {
+    res.status(500).send(`Error: ${error.message}`);
+  }
+});
+
+// Dashboard simpel
+app.get('/', (req, res) => {
+  res.send('<h1>Bot Operational</h1>');
+});
+
+module.exports = app;
       <!DOCTYPE html>
       <html lang="en">
       <head>
