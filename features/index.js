@@ -36,22 +36,22 @@ function register(bot) {
 
   // 3. Menangani interaksi tombol (Callback Query)
   // 
-  bot.on('callback_query', (query) => {
-    const data = query.data;
-    const chatId = query.message.chat.id;
+  // Di dalam index.js, bagian callback_query
+bot.on('callback_query', (query) => {
+  const data = query.data;
+  const chatId = query.message.chat.id;
 
-    // Logika navigasi berdasarkan data tombol
-    if (data === 'menu_ratepap') {
-      bot.sendMessage(chatId, '📝 Masukkan Token untuk memulai Rate PAP:');
-    } else if (data === 'menu_kirimpap') {
-      bot.sendMessage(chatId, '📤 Pilih mode: [Foto/Video]. Silakan upload media Anda.');
-    } else if (data === 'menu_menfes') {
-      bot.sendMessage(chatId, '💌 Mode Menfes diaktifkan. Silakan kirim pesan Anda.');
-    }
-    
-    // Menghapus notifikasi loading di tombol agar tidak nyangkut
-    bot.answerCallbackQuery(query.id);
-  });
+  // Kita panggil fungsi execute dari file yang bersangkutan
+  if (data === 'menu_ratepap') {
+    require('./ratepap').execute(bot, query.message);
+  } else if (data === 'menu_kirimpap') {
+    require('./kirimpap').execute(bot, query.message);
+  } else if (data === 'menu_menfes') {
+    require('./menfes').execute(bot, query.message);
+  }
+  
+  bot.answerCallbackQuery(query.id);
+});
 
   // 4. Menangani pesan teks biasa dan command yang tidak dikenal
   bot.on('message', (msg) => {
