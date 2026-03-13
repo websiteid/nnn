@@ -6,6 +6,9 @@ const features = require('../features');
 const app = express();
 const bot = new TelegramBot(config.BOT_TOKEN, { polling: false });
 
+// Di api/bot.js
+global.papDatabase = global.papDatabase || {};
+global.userState = global.userState || {};
 features.register(bot);
 
 app.use(express.json());
